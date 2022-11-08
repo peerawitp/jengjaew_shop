@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jengjaew_shop/themes/color.dart';
+import 'package:jengjaew_shop/widgets/input_decoration.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -54,31 +55,83 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
         body: ListView(
           children: [
-            Form(key: formKey, child: Column(children: [CreateProductName()])),
+            Form(
+                key: formKey,
+                child: Column(children: [
+                  CreateProductName(),
+                  CreateProductPrice(),
+                  CreateProductQuantity(),
+                  CreateProductDescription()
+                ])),
           ],
         ));
   }
 
   Widget CreateProductName() {
-    return TextFormField(
-      keyboardType: TextInputType.text,
-      autofocus: true,
-      style: Theme.of(context).textTheme.subtitle1,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return 'Please enter product name';
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-          enabledBorder: new OutlineInputBorder(
-              borderSide: BorderSide(color: kColorsGrey, width: 1)),
-          labelText: 'Category',
-          labelStyle: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w600, color: kColorsGrey)),
-      onChanged: (value) {
-        productName = value;
-      },
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      child: TextFormField(
+          keyboardType: TextInputType.text,
+          autofocus: true,
+          style: Theme.of(context).textTheme.subtitle1,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please enter product name';
+            }
+            return null;
+          },
+          decoration: InputDecorationWidget(context, 'Name')),
+    );
+  }
+
+  Widget CreateProductPrice() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      child: TextFormField(
+          keyboardType: TextInputType.text,
+          autofocus: true,
+          style: Theme.of(context).textTheme.subtitle1,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please enter product price';
+            }
+            return null;
+          },
+          decoration: InputDecorationWidget(context, 'Price')),
+    );
+  }
+
+  Widget CreateProductQuantity() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      child: TextFormField(
+          keyboardType: TextInputType.text,
+          autofocus: true,
+          style: Theme.of(context).textTheme.subtitle1,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please enter product quantity';
+            }
+            return null;
+          },
+          decoration: InputDecorationWidget(context, 'Quantity')),
+    );
+  }
+
+  Widget CreateProductDescription() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      child: TextFormField(
+          keyboardType: TextInputType.text,
+          autofocus: true,
+          style: Theme.of(context).textTheme.subtitle1,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please enter product description';
+            }
+            return null;
+          },
+          decoration: InputDecorationWidget(context, 'Description')),
     );
   }
 }
