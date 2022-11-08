@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           aspectRatio: 1,
                           child: Container(
                             decoration: BoxDecoration(
-                                color: kColorsRed,
+                                color: kColorsCream,
                                 borderRadius: BorderRadius.circular(15)),
                           )),
                       SizedBox(
@@ -78,10 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Text(
                         '\$Price',
-                        style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w600,
-                            color: kColorsPurple),
+                        style: TextStyle(fontSize: 14.0, color: kColorsPurple),
                       )
                     ],
                   ),

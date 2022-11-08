@@ -44,7 +44,51 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
           )
         ],
       ),
-      body: Container(),
+      body: Container(
+        color: kColorsWhite,
+        child: ListView(
+          children: [
+            AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: kColorsCream,
+                  ),
+                )),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Book',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  Text(
+                    'Product Name',
+                    style: Theme.of(context).textTheme.headline2,
+                  ),
+                  Text(
+                    '\$ price',
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w700,
+                        color: kColorsRed),
+                  ),
+                  Text(
+                    'Quantity: 2',
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                  Text(
+                    'Description: ####################\n##############################',
+                    style: Theme.of(context).textTheme.subtitle1,
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
