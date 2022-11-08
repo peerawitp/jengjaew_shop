@@ -30,7 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: kColorsWhite,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/add_product');
+            },
             icon: SvgPicture.asset('assets/icons/add.svg'),
           ),
           IconButton(
@@ -44,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(6.0),
+        padding: const EdgeInsets.all(12.0),
         child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, childAspectRatio: 0.75),
@@ -58,7 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     AspectRatio(
                         aspectRatio: 1,
                         child: Container(
-                          decoration: BoxDecoration(color: kColorsRed),
+                          decoration: BoxDecoration(
+                              color: kColorsRed,
+                              borderRadius: BorderRadius.circular(15)),
                         )),
                     SizedBox(
                       height: 12,
