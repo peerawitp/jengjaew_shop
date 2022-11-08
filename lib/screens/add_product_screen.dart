@@ -34,7 +34,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             },
           ),
           title: Text(
-            'Add Product  ',
+            'Add Product',
             style: Theme.of(context).textTheme.headline3,
           ),
           shape: Border(bottom: BorderSide(color: kColorsCream, width: 1.5)),
@@ -56,21 +56,36 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
         body: ListView(
           children: [
-            Form(
-                key: formKey,
-                child: Column(children: [
-                  CreateProductCategory(),
-                  CreateProductName(),
-                  CreateProductPrice(),
-                  CreateProductQuantity(),
-                  CreateProductDescription()
-                ])),
+            InkWell(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Form(
+                  key: formKey,
+                  child: Column(children: [
+                    CreateProductCategory(),
+                    CreateProductName(),
+                    CreateProductPrice(),
+                    CreateProductQuantity(),
+                    CreateProductDescription()
+                  ])),
+            ),
             Expanded(
+                child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: InkWell(
+                onTap: () {
+                  if (formKey.currentState!.validate()) {
+                    formKey.currentState!.save();
+                  }
+                },
                 child: MainBtnWidget(
                     colorBtn: kColorsPurple,
                     textBtn: 'Confirm',
                     isTransparent: false,
-                    haveIcon: false)),
+                    haveIcon: false),
+              ),
+            )),
           ],
         ));
   }
@@ -88,6 +103,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
         child: InputDecorator(
           decoration: InputDecoration(
+              labelText: 'Category',
               contentPadding:
                   new EdgeInsets.symmetric(vertical: 0, horizontal: 10),
               border: new OutlineInputBorder(
@@ -145,7 +161,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           inputFormatters: <TextInputFormatter>[
             FilteringTextInputFormatter.digitsOnly
           ],
-          autofocus: true,
+          autofocus: false,
           style: Theme.of(context).textTheme.subtitle1,
           validator: (value) {
             if (value!.isEmpty) {
@@ -161,8 +177,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
       child: TextFormField(
-          keyboardType: TextInputType.text,
-          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly
+          ],
+          autofocus: false,
           style: Theme.of(context).textTheme.subtitle1,
           validator: (value) {
             if (value!.isEmpty) {
@@ -179,7 +198,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
       child: TextFormField(
           keyboardType: TextInputType.text,
-          autofocus: true,
+          autofocus: false,
           style: Theme.of(context).textTheme.subtitle1,
           validator: (value) {
             if (value!.isEmpty) {
