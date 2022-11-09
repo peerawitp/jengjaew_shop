@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
+import 'dart:io';
+
 import 'package:jengjaew_shop/themes/color.dart';
 import 'package:jengjaew_shop/widgets/input_decoration.dart';
 import 'package:jengjaew_shop/widgets/main_btn_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddProductScreen extends StatefulWidget {
-  const AddProductScreen({super.key});
+  AddProductScreen({Key? key}) : super(key: key);
 
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
@@ -14,80 +17,160 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final formKey = GlobalKey<FormState>();
-  String? productCategory,
+  String? productCategory = 'Pen',
       productName,
       productPrice,
       productQuantity,
       productDescription;
 
+  File? imageFile;
+  final picker = ImagePicker();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: SvgPicture.asset(
-              'assets/icons/back.svg',
-              color: kColorsWhite,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+      appBar: AppBar(
+        leading: IconButton(
+          icon: SvgPicture.asset(
+            'assets/icons/back.svg',
+            color: kColorsWhite,
           ),
-          title: Text(
-            'Add Product',
-            style: Theme.of(context).textTheme.headline3,
-          ),
-          shape: Border(bottom: BorderSide(color: kColorsCream, width: 1.5)),
-          elevation: 0,
-          toolbarHeight: 60,
-          backgroundColor: kColorsPurple,
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon:
-                  SvgPicture.asset('assets/icons/msg.svg', color: kColorsWhite),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon:
-                  SvgPicture.asset('assets/icons/me.svg', color: kColorsWhite),
-            )
-          ],
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: ListView(
-          children: [
-            InkWell(
-              onTap: () {
-                FocusScope.of(context).unfocus();
+        backgroundColor: kColorsPurple,
+        title: Text(
+          'Add Product',
+          style: Theme.of(context).textTheme.headline3,
+        ),
+        // สร้างเส้นคั่นระหว่าง appbar กับ body
+        shape: Border(bottom: BorderSide(color: kColorsCream, width: 1.5)),
+
+        // ระดับของเงา
+        elevation: 0,
+
+        // ความสูงของ appbar ด้านบน
+        toolbarHeight: 60,
+
+        // สร้างปุ่มด้านขวา
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: SvgPicture.asset(
+                'assets/icons/msg.svg',
+                color: kColorsWhite,
+              )),
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/add_product');
               },
-              child: Form(
-                  key: formKey,
-                  child: Column(children: [
+              icon: SvgPicture.asset(
+                'assets/icons/me.svg',
+                color: kColorsWhite,
+              )),
+        ],
+      ),
+      body: ListView(
+        children: [
+          InkWell(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        showButtomSheet(context);
+                      },
+                      child: imageFile != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.file(imageFile!,
+                                  width: 153, height: 153, fit: BoxFit.cover))
+                          : Container(
+                              width: 153,
+                              height: 153,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: kColorsRed),
+                            ),
+                    ),
                     CreateProductCategory(),
                     CreateProductName(),
                     CreateProductPrice(),
                     CreateProductQuantity(),
                     CreateProductDescription()
-                  ])),
+                  ],
+                )),
+          ),
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: InkWell(
+              onTap: () {
+                if (formKey.currentState!.validate()) {
+                  formKey.currentState!.save();
+                }
+              },
+              child: MainBtnWidget(
+                  colorBtn: kColorsPurple,
+                  textBtn: 'Confirm',
+                  isTransparent: false,
+                  haveIcon: false),
             ),
-            Expanded(
-                child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: InkWell(
-                onTap: () {
-                  if (formKey.currentState!.validate()) {
-                    formKey.currentState!.save();
-                  }
-                },
-                child: MainBtnWidget(
-                    colorBtn: kColorsPurple,
-                    textBtn: 'Confirm',
-                    isTransparent: false,
-                    haveIcon: false),
-              ),
-            )),
+          ))
+        ],
+      ),
+    );
+  }
+
+  Widget CreateProductName() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+      child: TextFormField(
+          keyboardType: TextInputType.text,
+          autofocus: false,
+          style: Theme.of(context).textTheme.subtitle1,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "Please enter product name";
+            } else {
+              return null;
+            }
+          },
+          onChanged: (value) {
+            productName = value;
+          },
+          decoration: InputDecorationWidget(context, "Name")),
+    );
+  }
+
+  Widget CreateProductPrice() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+      child: TextFormField(
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly
           ],
-        ));
+          autofocus: false,
+          style: Theme.of(context).textTheme.subtitle1,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "Please enter product price";
+            } else {
+              return null;
+            }
+          },
+          onChanged: (value) {
+            productPrice = value;
+          },
+          decoration: InputDecorationWidget(context, "Price")),
+    );
   }
 
   Widget CreateProductCategory() {
@@ -103,7 +186,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
         child: InputDecorator(
           decoration: InputDecoration(
-              labelText: 'Category',
               contentPadding:
                   new EdgeInsets.symmetric(vertical: 0, horizontal: 10),
               border: new OutlineInputBorder(
@@ -136,46 +218,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ));
   }
 
-  Widget CreateProductName() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-      child: TextFormField(
-          keyboardType: TextInputType.text,
-          autofocus: true,
-          style: Theme.of(context).textTheme.subtitle1,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Please enter product name';
-            }
-            return null;
-          },
-          decoration: InputDecorationWidget(context, 'Name')),
-    );
-  }
-
-  Widget CreateProductPrice() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-      child: TextFormField(
-          keyboardType: TextInputType.number,
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.digitsOnly
-          ],
-          autofocus: false,
-          style: Theme.of(context).textTheme.subtitle1,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Please enter product price';
-            }
-            return null;
-          },
-          decoration: InputDecorationWidget(context, 'Price')),
-    );
-  }
-
   Widget CreateProductQuantity() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
       child: TextFormField(
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
@@ -185,28 +230,95 @@ class _AddProductScreenState extends State<AddProductScreen> {
           style: Theme.of(context).textTheme.subtitle1,
           validator: (value) {
             if (value!.isEmpty) {
-              return 'Please enter product quantity';
+              return "Please enter product quantity";
+            } else {
+              return null;
             }
-            return null;
           },
-          decoration: InputDecorationWidget(context, 'Quantity')),
+          onChanged: (value) {
+            productQuantity = value;
+          },
+          decoration: InputDecorationWidget(context, "Quantity")),
     );
   }
 
   Widget CreateProductDescription() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
       child: TextFormField(
           keyboardType: TextInputType.text,
           autofocus: false,
           style: Theme.of(context).textTheme.subtitle1,
           validator: (value) {
             if (value!.isEmpty) {
-              return 'Please enter product description';
+              return "Please enter product description";
+            } else {
+              return null;
             }
-            return null;
           },
-          decoration: InputDecorationWidget(context, 'Description')),
+          onChanged: (value) {
+            productDescription = value;
+          },
+          decoration: InputDecorationWidget(context, "Description")),
     );
+  }
+
+  Future<void> showButtomSheet(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Wrap(
+              children: [
+                ListTile(
+                  onTap: () {
+                    openGallery(context);
+                  },
+                  leading: SvgPicture.asset(
+                    'assets/icons/gallery.svg',
+                    color: kColorsPurple,
+                  ),
+                  title: Text('Gallery',
+                      style: Theme.of(context).textTheme.subtitle1),
+                ),
+                ListTile(
+                  onTap: () {
+                    openCamera(context);
+                  },
+                  leading: SvgPicture.asset(
+                    'assets/icons/camera.svg',
+                    color: kColorsPurple,
+                  ),
+                  title: Text('Camera',
+                      style: Theme.of(context).textTheme.subtitle1),
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  openGallery(BuildContext context) async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        imageFile = File(pickedFile.path);
+      } else {
+        print('No Image selected');
+      }
+    });
+    Navigator.of(context).pop();
+  }
+
+  openCamera(BuildContext context) async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    setState(() {
+      if (pickedFile != null) {
+        imageFile = File(pickedFile.path);
+      } else {
+        print('No Image selected');
+      }
+    });
+    Navigator.of(context).pop();
   }
 }
