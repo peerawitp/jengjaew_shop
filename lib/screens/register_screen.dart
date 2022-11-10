@@ -1,9 +1,15 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:jengjaew_shop/services/auth_service.dart';
 import 'package:jengjaew_shop/themes/color.dart';
+import 'package:jengjaew_shop/utils/showSnackbar.dart';
 import 'package:jengjaew_shop/widgets/input_decoration.dart';
 import 'package:jengjaew_shop/widgets/main_btn_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   RegisterScreen({Key? key}) : super(key: key);
@@ -14,7 +20,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
-  String? username, email, phone, password, confirmPassword;
+  String? username, email, phone, password, confirmPassword, address;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   CreatePhone(),
                   CreatePassword(),
                   CreateConfirmPassword(),
+                  CreateAddress()
                 ],
               ),
             ),
@@ -68,11 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.only(top: 10, bottom: 20),
                 child: InkWell(
                     onTap: () {
-                      if (formKey.currentState!.validate()) {
-                        formKey.currentState!.save();
-                        Navigator.of(context)
-                            .pushNamedAndRemoveUntil('/home', (route) => false);
-                      }
+                      registerHandle(context: context);
                     },
                     child: MainBtnWidget(
                         colorBtn: kColorsPurple,
@@ -228,5 +231,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
             confirmPassword = value;
           },
         ));
+  }
+
+  Widget CreateAddress() {
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+        child: TextFormField(
+          keyboardType: TextInputType.text,
+          autofocus: false,
+          style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+              color: kColorsPurple),
+          decoration: InputDecorationWidget(context, 'Address'),
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "Please enter address";
+            }
+            return null;
+          },
+          onChanged: (value) {
+            address = value;
+          },
+        ));
+  }
+
+  Future<void> registerHandle({required BuildContext context}) async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+      showDialog(
+          context: context,
+          builder: ((context) => Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 4,
+                ),
+              )));
+      try {
+        await authService.createUser(
+            email: email,
+            username: username,
+            password: password,
+            phone: phone,
+            address: address);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (route) => false);
+      } on auth.FirebaseAuthException catch (e) {
+        log(e.message!);
+        showSnackBar(e.message);
+        Navigator.pop(context);
+      }
+    }
   }
 }

@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:jengjaew_shop/services/auth_service.dart';
 import 'package:jengjaew_shop/themes/color.dart';
 import 'package:jengjaew_shop/widgets/coin_menu_widget.dart';
 import 'package:jengjaew_shop/widgets/main_btn_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -233,8 +235,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> logoutHandle({required BuildContext context}) async {
+    final authService = Provider.of<AuthService>(context, listen: false);
     try {
-      await FirebaseAuth.instance.signOut();
+      await authService.signOut();
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
     } on FirebaseAuthException catch (e) {
       log(e.message!);
